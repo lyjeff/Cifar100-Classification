@@ -1,4 +1,4 @@
-# dogs-vs-cats
+# ART-Tool-Classification-Cifar100
 
 Author: Jeff Lin
 
@@ -6,7 +6,7 @@ Author: Jeff Lin
 
 ## Summary
 
-- [dogs-vs-cats](#dogs-vs-cats)
+- [ART-Tool-Classification-Cifar100](#art-tool-classification-cifar100)
   - [Summary](#summary)
   - [Introduciotn](#introduciotn)
   - [Quick Run](#quick-run)
@@ -17,45 +17,26 @@ Author: Jeff Lin
 
 ## Introduciotn
 
-This project is to practice the competition [Dogs vs. Cats Redux: Kernels Edition](#https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition) on Kaggle. The competition is a Dogs vs. Cats classification problem.
-
-Submissions are scored on the log loss:
-
-<img src="https://i.imgur.com/D2CI0TM.png" />
-
-where
-
-- `n` is the number of images in the test set
-- `\hat{y}_i` is the predicted probability of the image being a dog
-- `y_i` is 1 if the image is a dog, 0 if cat
-- `log` is the natural `base e` logarithm
-
-Submission File should have a header and be in the following format:
-
-```text
-id,label
-1,0.5
-2,0.5
-3,0.5
-...
-
-```
-
 ---
 
 ## Quick Run
 
-Run the following command to run default training and evaluating.
+Run the following command to run default training.
 
 ```python
-python main.py
+python train.py
+```
+
+Please see execution parameters by following command.
+```
+python train.py -h
 ```
 
 ---
 
 ## Execution parameters
 
-See detail by `python main.py -h` command.
+See detail by `python train.py -h` command.
 
 - `-h, --help`
   - show this help message and exit
@@ -103,21 +84,3 @@ See detail by `python main.py -h` command.
 ---
 
 ## Experimental Results
-
-The submission score of the best experimental result is **0.06038**. Click [here](https://drive.google.com/file/d/14A-P7tUS1nfKbAs1Z3SvrFCovybxlBE7/view?usp=sharing) to download the fine-trained model. The followings are the excution parameters of the best score.
-
-|    Parameter    |  Value  |
-| :-------------: | :-----: |
-|  `--holdout-p`  |   0.8   |
-| `--num-workers` |    8    |
-| `--batch-size`  |    1    |
-|   `--epochs`    |    1    |
-|    `--model`    |  VGG19  |
-|  `--iteration`  |  True   |
-|  `--train-all`  |  True   |
-|    `--optim`    |   SGD   |
-|     `--lr`      |  1e-5   |
-|  `--momentum`   |   0.9   |
-|  `--scheduler`  |  True   |
-|    `--gamma`    | 0.99985 |
-|  `--threshold`  |  False  |
