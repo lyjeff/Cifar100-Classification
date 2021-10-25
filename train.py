@@ -17,7 +17,11 @@ from utils import cross_validation, threshold_function
 # from torchsummary import summary
 
 
-def train(args):
+def train(argument_generator):
+
+    # get argument settings
+    args = argument_generator.train_argument_setting()
+    args.model = Model().get_model_list()[args.model]
 
     # get state name
     t = time.localtime()
@@ -25,13 +29,14 @@ def train(args):
     state_name = f"{args.model}_{args.optim}_{args.epochs}_{args.lr}_{args.batch_size}_{run_time}"
 
     # dataset
-    full_set = MyDataset(args.train_path)
-    num_classes = full_set.num_classes     # num_classes = 2537
+    train_set = MyDataset(os.path.join(args.train_path, "train"))
+    valid_set = MyDataset(os.path.join(args.train_path, "test"))
+    num_classes = train_set.num_classes     # num_classes = 2537
 
     # use torch.random_split to create the validation dataset
-    lengths = [int(round(len(full_set) * args.holdout_p)),
-               int(round(len(full_set) * (1 - args.holdout_p)))]
-    train_set, valid_set = random_split(full_set, lengths)
+    # lengths = [int(round(len(full_set) * args.holdout_p)),
+    #            int(round(len(full_set) * (1 - args.holdout_p)))]
+    # train_set, valid_set = random_split(full_set, lengths)
 
     # build hold out CV
     # train_set, valid_set = cross_validation(full_set, args.holdout_p)
@@ -151,28 +156,30 @@ def train(args):
             if phase == 'valid' and epoch_loss < best:
                 best = epoch_loss
                 torch.save(model.state_dict(), os.path.join(
-                    save_path, 'model_weights.pth'))
+                    save_path, '{args.model}.model'))
+                torch.save(optimizer.state_dict(), os.path.join(
+                    save_path, '{args.model}.optimizer'))
 
         print(
             f"Epoch {epoch+1}\tTrain Loss: {loss_list['train'][-1]:.4f}, Validation Loss: {loss_list['valid'][-1]:.4f}")
         print(
             f"Epoch {epoch+1}\tTrain Accuracy: {accuracy_list['train'][-1]:.4f}, Validation Accuracy: {accuracy_list['valid'][-1]:.4f}\n")
 
-    # plot the loss curve for training and validation
-    pd.DataFrame({
-        "train-loss": loss_list['train'],
-        "valid-loss": loss_list['valid']
-    }).plot()
-    plt.xlabel("Epoch"), plt.ylabel("Loss")
-    plt.savefig(os.path.join(save_path, "Loss_curve.jpg"))
+        # plot the loss curve for training and validation
+        pd.DataFrame({
+            "train-loss": loss_list['train'],
+            "valid-loss": loss_list['valid']
+        }).plot()
+        plt.xlabel("Epoch"), plt.ylabel("Loss")
+        plt.savefig(os.path.join(save_path, "Loss_curve.jpg"))
 
-    # plot the accuracy curve for training and validation
-    pd.DataFrame({
-        "train-accuracy": accuracy_list['train'],
-        "valid-accuracy": accuracy_list['valid']
-    }).plot()
-    plt.xlabel("Epoch"), plt.ylabel("Accuracy")
-    plt.savefig(os.path.join(save_path, "Training_accuracy.jpg"))
+        # plot the accuracy curve for training and validation
+        pd.DataFrame({
+            "train-accuracy": accuracy_list['train'],
+            "valid-accuracy": accuracy_list['valid']
+        }).plot()
+        plt.xlabel("Epoch"), plt.ylabel("Accuracy")
+        plt.savefig(os.path.join(save_path, "Training_accuracy.jpg"))
 
     print(f"Best Validation Loss: {best}")
     print(f"\nSaving output files and model parameters at {save_path}")

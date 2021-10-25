@@ -27,11 +27,11 @@ class Argument_Generator():
         parser.add_argument('--batch-size', type=int, default=32,
                             help='set the batch size (default: 32)')
         parser.add_argument(
-            '--model', type=str,
-            choices=Model().get_model_list(),
+            '--model', type=int,
+            choices=[self.__Range(0, len(Model().get_model_list())-1)],
             metavar='MODEL_NAME',
             default='VGG19',
-            help=f'set model name.\nThe acceptable models are {Model().get_model_list()} (default: "VGG19")'
+            help=f'set model by options(0-{len(Model().get_model_list())-1}). The acceptable models are {Model().get_model_choice()} (default: "VGG19")'
         )
 
         # post-processing argument
@@ -56,8 +56,8 @@ class Argument_Generator():
         parser = self.__get_common_argument()
 
         # dataset path setting
-        parser.add_argument('--train-path', type=str, default='./data_tmp/',
-                            help='training dataset path (default: ./data_tmp/)')
+        parser.add_argument('--train-path', type=str, default='../art-cifar/cifar-100-python/',
+                            help='training dataset path (default: ../art-cifar/cifar-100-python/)')
 
         # training argument
         parser.add_argument('--epochs', type=int, default=50,
@@ -66,8 +66,8 @@ class Argument_Generator():
                             help='Set to do not load pre-trained model (default: False)')
         parser.add_argument('--iteration', action="store_true", default=False,
                             help='set to decrease learning rate each iteration (default: False)')
-        parser.add_argument('--train-all', action="store_true", default=False,
-                            help='set to update all parameters of model (default: False)')
+        parser.add_argument('--train-all', action="store_true", default=True,
+                            help='set to update all parameters of model (default: True)')
 
         # optimizer argument
         parser.add_argument('--optim', type=str, default='Adam',

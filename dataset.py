@@ -1,4 +1,5 @@
 import os
+import pickle
 from glob import glob
 
 import cv2
@@ -34,8 +35,7 @@ class Transformer():
     __data_transforms = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             std=[0.229, 0.224, 0.225])
+        # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
     def pre_transform(self, img):
@@ -49,32 +49,32 @@ class MyDataset(Dataset):  # for training
     def __init__(self, path):
 
         self.data = []
+        self.num_classes = 100
 
-        for img_name in glob(os.path.join(path, '*.jpg')):
-            label = 1.0 if os.path.basename(img_name).split('.')[
-                0] == 'dog' else 0.0
-            self.data.append((img_name, label))
+        dict = self.__unpickle(path)
+        datas, labels = dict[b'data'], dict[b'fine_labels']
+        set_length = len(labels)
 
-    def __len__(self):
-        return len(self.data)
+        for idx in range(set_length):
 
-    def __getitem__(self, idx):
-        data = Transformer().data_transforms(Image.open(self.data[idx][0]))
-        return data, self.data[idx][1]
+            img = datas[idx].reshape((1024, 3), order='F').reshape((32, 32, 3))
 
+            label_idx = labels[idx]
+            label_vector = np.zeros((self.num_classes))
+            label_vector[label_idx] = 1
 
-class Eval_TextDataset(Dataset):  # for evaluating dataset
-    def __init__(self, path, csv):
+            self.data.append((img, label_vector, label_idx))
 
-        self.data = []
-
-        for img_id in csv['id']:
-            img_path = os.path.join(path, f'{img_id}.jpg')
-            self.data.append(Image.open(img_path))
+    def __unpickle(self, file):
+        with open(file, 'rb') as fo:
+            dict = pickle.load(fo, encoding='bytes')
+        return dict
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
-        data = Transformer().data_transforms(self.data[idx])
-        return data
+        img = Image.fromarray(self.data[idx][0]).convert('RGB')
+        img = Transformer().data_transforms(img)
+
+        return img, self.data[idx][1], self.data[idx][2]

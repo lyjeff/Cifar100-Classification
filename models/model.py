@@ -1,9 +1,19 @@
 import sys
 import torch.nn as nn
 from torchsummary import summary
-from torchvision.models import vgg19, resnet50, densenet161, googlenet, inception_v3
+from torchvision.models import (
+    vgg19,
+    resnet50,
+    resnext101_32x8d,
+    densenet161,
+    googlenet,
+    inception_v3,
+    alexnet,
+)
 
 from .MyCNN import MyCNN
+from .lenet import LeNet5
+from .CNN import CNN
 
 
 def VGG19(num_classes, pretrain=True, all=False):
@@ -21,21 +31,7 @@ def VGG19(num_classes, pretrain=True, all=False):
     return model
 
 
-def VGG19_2(num_classes, pretrain=True, all=False):
-    model = vgg19(pretrained=pretrain)
-
-    # 把參數凍結
-    if all is False:
-        for param in model.parameters():
-            param.requires_grad = False
-
-    model.classifier[3] = nn.Linear(4096, 1024)
-    model.classifier[6] = nn.Linear(1024, num_classes)
-
-    return model
-
-
-def ResNet(num_classes, pretrain=True, all=False):
+def ResNet50(num_classes, pretrain=True, all=False):
     model = resnet50(pretrained=pretrain)
 
     # 把參數凍結
@@ -45,6 +41,34 @@ def ResNet(num_classes, pretrain=True, all=False):
 
     # 修改全連線層的輸出
     model.fc = nn.Linear(2048, num_classes)
+
+    return model
+
+
+def ResNeXt101(num_classes, pretrain=True, all=False):
+    model = resnext101_32x8d(pretrained=pretrain)
+
+    # 把參數凍結
+    if all is False:
+        for param in model.parameters():
+            param.requires_grad = False
+
+    # 修改全連線層的輸出
+    model.fc = nn.Linear(2048, num_classes)
+
+    return model
+
+
+def AlexNet(num_classes, pretrain=True, all=False):
+    model = alexnet(pretrained=pretrain)
+
+    # 把參數凍結
+    if all is False:
+        for param in model.parameters():
+            param.requires_grad = False
+
+    # 修改全連線層的輸出
+    model.classifier[6] = nn.Linear(4096, num_classes)
 
     return model
 
@@ -63,7 +87,7 @@ def Densenet(num_classes, pretrain=True, all=False):
     return model
 
 
-def GoogleNet(num_classes, pretrain=True, all=False):
+def GoogLeNet(num_classes, pretrain=True, all=False):
     model = googlenet(pretrained=pretrain, aux_logits=False)
 
     # 把參數凍結
@@ -95,11 +119,28 @@ def inceptionv3(num_classes, pretrain=True, all=False):
 
 class Model():
 
-    model_list = ['VGG19', 'VGG19_2', 'ResNet',
-                  'MyCNN', 'Densenet', 'GoogleNet', 'inceptionv3']
+    model_list = [
+        'VGG19',
+        'ResNet50',
+        'ResNeXt101',
+        'AlexNet',
+        'MyCNN',
+        'Densenet',
+        'GoogLeNet',
+        'inceptionv3',
+        'LeNet5',
+        'CNN'
+    ]
 
     def get_model_list(self):
         return self.model_list
+
+    def get_model_choice(self):
+        choice = f"["
+        for idx, model in enumerate(self.model_list):
+            choice = choice + f"{idx}: {model}, "
+        choice = choice + "]"
+        return choice
 
     def check_model_name(self, name):
         if name not in self.model_list:
@@ -131,6 +172,6 @@ if __name__ == '__main__':
 
     # model_list= ['VGG19', 'VGG19_2', 'ResNet', 'MyCNN', 'Densenet', 'GoogleNet', 'inceptionv3']
     model = Model().model_builder(Model().get_model_list()[3])
-    summary(model, input_size=(3,224,224), batch_size=1, device="cpu")
+    summary(model, input_size=(3, 224, 224), batch_size=1, device="cpu")
     # print(model)
     pass
