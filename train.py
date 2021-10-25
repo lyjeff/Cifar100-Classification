@@ -156,9 +156,9 @@ def train(argument_generator):
             if phase == 'valid' and epoch_loss < best:
                 best = epoch_loss
                 torch.save(model.state_dict(), os.path.join(
-                    save_path, '{args.model}.model'))
+                    save_path, f'{args.model}.model'))
                 torch.save(optimizer.state_dict(), os.path.join(
-                    save_path, '{args.model}.optimizer'))
+                    save_path, f'{args.model}.optimizer'))
 
         print(
             f"Epoch {epoch+1}\tTrain Loss: {loss_list['train'][-1]:.4f}, Validation Loss: {loss_list['valid'][-1]:.4f}")
