@@ -3,7 +3,7 @@ import torch.nn as nn
 
 
 class CNN(nn.Module):
-    def __init__(self, num_classes: int):
+    def __init__(self, num_classes: int, **kwargs):
         super(CNN, self).__init__()
         # Convolution 1 , input_shape=(1,28,28)
         self.cnn1 = nn.Conv2d(in_channels=3, out_channels=16, kernel_size=5,

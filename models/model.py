@@ -157,7 +157,8 @@ class Model():
             train_all = True
 
         # load model
-        model = globals()[model_name](num_classes, pretrain, train_all)
+        model = globals()[model_name](
+            num_classes=num_classes, pretrain=pretrain, all=train_all)
 
         # 取得要更新的參數
         parameters = []

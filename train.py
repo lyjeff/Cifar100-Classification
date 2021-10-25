@@ -112,7 +112,7 @@ def train(argument_generator):
             with tqdm(
                 enumerate(dataloader[phase]),
                 total=len(dataloader[phase]),
-                desc=f'{epoch}/{args.epochs}, {phase}'
+                desc=f'{epoch+1}/{args.epochs}, {phase}'
             ) as t, torch.set_grad_enabled(phase == 'train'):
                 for _, data in t:
                     inputs, targets, labels = [d.to(device) for d in data]
@@ -180,6 +180,8 @@ def train(argument_generator):
         }).plot()
         plt.xlabel("Epoch"), plt.ylabel("Accuracy")
         plt.savefig(os.path.join(save_path, "Training_accuracy.jpg"))
+
+        plt.close('all')
 
     print(f"Best Validation Loss: {best}")
     print(f"\nSaving output files and model parameters at {save_path}")

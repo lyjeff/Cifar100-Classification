@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 
 class LeNet5(nn.Module):
-    def __init__(self, num_classes: int):
+    def __init__(self, num_classes: int, **kwargs):
         super(LeNet5, self).__init__()
         self.conv1 = nn.Conv2d(3, 6, 5)
         self.pool1 = nn.MaxPool2d(2, 2)
