@@ -121,15 +121,15 @@ class Model():
 
     model_list = [
         'VGG19',
-        'ResNet50',
+        'LeNet5',
+        'CNN',
         'ResNeXt101',
         'AlexNet',
-        'MyCNN',
-        'Densenet',
         'GoogLeNet',
+        'ResNet50',
         'inceptionv3',
-        'LeNet5',
-        'CNN'
+        'Densenet',
+        'MyCNN',
     ]
 
     def get_model_list(self):
